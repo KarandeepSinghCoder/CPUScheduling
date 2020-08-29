@@ -55,8 +55,14 @@ void findavgTime(Process proc[], int n)
 		<< (float)total_tat / (float)n;
 }
 
-void priorityScheduling(Process proc[], int n)
+void priorityScheduling(int b[],int a[], int n)
 {
+	Process proc[n];
+        for(int i=0;i<n;i++){
+        proc[i].pid=i;
+        proc[i].bt=b[i];
+        proc[i].priority=a[i];
+        }
 	sort(proc, proc + n, comparison);
 
 	cout<< "Order in which processes gets executed \n";
@@ -65,13 +71,3 @@ void priorityScheduling(Process proc[], int n)
 
 	findavgTime(proc, n);
 }
-/*
-// Driver code
-int main()
-{
-	Process proc[] = {{1, 10, 2}, {2, 5, 0}, {3, 8, 1}};
-	int n = sizeof proc / sizeof proc[0];
-	priorityScheduling(proc, n);
-	return 0;
-}
-*/

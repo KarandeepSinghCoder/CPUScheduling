@@ -52,35 +52,25 @@ void completionTimeShortest_Job_First_non(int num, int mat[][6])
 		}
 	}
 }
-/*
-int main()
+int Shortest_Job_First_non(int p[],int a[],int b[],int n)
 {
-	int num, temp;
 
-	cout<<"Enter number of Process: ";
-	cin>>num;
-
-	cout<<"...Enter the process ID...\n";
+    int num, temp;
+	num=n;
 	for(int i=0; i<num; i++)
 	{
-		cout<<"...Process "<<i+1<<"...\n";
-		cout<<"Enter Process Id: ";
-		cin>>mat[i][0];
-		cout<<"Enter Arrival Time: ";
-		cin>>mat[i][1];
-		cout<<"Enter Burst Time: ";
-		cin>>mat[i][2];
+		mat[i][0]=i;
+		mat[i][1]=a[i];
+		mat[i][2]=b[i];
 	}
-
 	cout<<"Before Arrange...\n";
 	cout<<"Process ID\tArrival Time\tBurst Time\n";
 	for(int i=0; i<num; i++)
 	{
 		cout<<mat[i][0]<<"\t\t"<<mat[i][1]<<"\t\t"<<mat[i][2]<<"\n";
 	}
-
-	arrangeArrival(num, mat);
-	completionTime(num, mat);
+	arrangeArrivalShortest_Job_First_non(num, mat);
+	completionTimeShortest_Job_First_non(num, mat);
 	cout<<"Final Result...\n";
 	cout<<"Process ID\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\n";
 	for(int i=0; i<num; i++)
@@ -88,4 +78,3 @@ int main()
 		cout<<mat[i][0]<<"\t\t"<<mat[i][1]<<"\t\t"<<mat[i][2]<<"\t\t"<<mat[i][4]<<"\t\t"<<mat[i][5]<<"\n";
 	}
 }
-*/

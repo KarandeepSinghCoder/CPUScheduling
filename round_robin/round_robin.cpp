@@ -40,8 +40,11 @@ void findTurnAroundTimeround_robin(int processes[], int n,int bt[], int wt[], in
 		tat[i] = bt[i] + wt[i];
 }
 
-void findavgTimeround_robin(int processes[], int n, int bt[],int quantum)
+void findavgTimeround_robin(int processes[], int n, int bt[])
 {
+    int quantum;
+    cout<<"\nEnter the time quantum  =  ";
+    cin>>quantum;
 	int wt[n], tat[n], total_wt = 0, total_tat = 0;
 
 	findWaitingTimeround_robin(processes, n, bt, wt, quantum);
@@ -63,20 +66,3 @@ void findavgTimeround_robin(int processes[], int n, int bt[],int quantum)
 	cout << "\nAverage turn around time = "
 		<< (float)total_tat / (float)n;
 }
-/*
-// Driver code
-int main()
-{
-	// process id's
-	int processes[] = { 1, 2, 3};
-	int n = sizeof processes / sizeof processes[0];
-
-	// Burst time of all processes
-	int burst_time[] = {10, 5, 8};
-
-	// Time quantum
-	int quantum = 2;
-	findavgTimeround_robin(processes, n, burst_time, quantum);
-	return 0;
-}
-*/

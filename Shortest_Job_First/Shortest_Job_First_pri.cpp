@@ -73,15 +73,14 @@ void findavgTimeShortest_Job_First_pri(Process proc[], int n)
 	cout << "\nAverage turn around time = "
 		<< (float)total_tat / (float)n;
 }
-/*
-// Driver code
-int main()
-{
-	Process proc[] = { { 1, 6, 1 }, { 2, 8, 1 },
-					{ 3, 7, 2 }, { 4, 3, 3 } };
-	int n = sizeof(proc) / sizeof(proc[0]);
+int Shortest_Job_First_pri(int p[],int b[],int a[],int n){
 
-	findavgTime(proc, n);
+Process proc[n];
+for(int i=0;i<n;i++){
+    proc[i].pid=i;
+    proc[i].bt=b[i];
+    proc[i].art=a[i];
+}
+	findavgTimeShortest_Job_First_pri(proc, n);
 	return 0;
 }
-*/
