@@ -1,173 +1,123 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <algorithm>
+#include <iomanip>
+#include <string.h>
 using namespace std;
 
-struct Process {
-	int processID;
-	int burstTime;
-	int tempburstTime;
-	int responsetime;
-	int arrivalTime;
-	int priority;
-	int outtime;
-	int intime;
+struct process {
+    int pid;
+    int arrival_time;
+    int burst_time;
+    int priority;
+    int start_time;
+    int completion_time;
+    int turnaround_time;
+    int waiting_time;
+    int response_time;
 };
 
-void insert(Process Heap[], Process value, int* heapsize,
-			int* currentTime)
-{
-	int start = *heapsize, i;
-	Heap[*heapsize] = value;
-	if (Heap[*heapsize].intime == -1)
-		Heap[*heapsize].intime = *currentTime;
-	++(*heapsize);
+int Priority_Scheduling_pre(process p[],int n,int burst_remaining[]) {
 
-	while (start != 0 && Heap[(start - 1) / 2].priority >
-								Heap[start].priority) {
-		Process temp = Heap[(start - 1) / 2];
-		Heap[(start - 1) / 2] = Heap[start];
-		Heap[start] = temp;
-		start = (start - 1) / 2;
-	}
+    float avg_turnaround_time;
+    float avg_waiting_time;
+    float avg_response_time;
+    float cpu_utilisation;
+    int total_turnaround_time = 0;
+    int total_waiting_time = 0;
+    int total_response_time = 0;
+    int total_idle_time = 0;
+    float throughput;
+    int is_completed[100];
+    memset(is_completed,0,sizeof(is_completed));
+
+    cout << setprecision(2) << fixed;
+    int current_time = 0;
+    int completed = 0;
+    int prev = 0;
+
+    while(completed != n) {
+        int idx = -1;
+        int mx = -1;
+        for(int i = 0; i < n; i++) {
+            if(p[i].arrival_time <= current_time && is_completed[i] == 0) {
+                if(p[i].priority > mx) {
+                    mx = p[i].priority;
+                    idx = i;
+                }
+                if(p[i].priority == mx) {
+                    if(p[i].arrival_time < p[idx].arrival_time) {
+                        mx = p[i].priority;
+                        idx = i;
+                    }
+                }
+            }
+        }
+
+        if(idx != -1) {
+            if(burst_remaining[idx] == p[idx].burst_time) {
+                p[idx].start_time = current_time;
+                total_idle_time += p[idx].start_time - prev;
+            }
+            burst_remaining[idx] -= 1;
+            current_time++;
+            prev = current_time;
+
+            if(burst_remaining[idx] == 0) {
+                p[idx].completion_time = current_time;
+                p[idx].turnaround_time = p[idx].completion_time - p[idx].arrival_time;
+                p[idx].waiting_time = p[idx].turnaround_time - p[idx].burst_time;
+                p[idx].response_time = p[idx].start_time - p[idx].arrival_time;
+
+                total_turnaround_time += p[idx].turnaround_time;
+                total_waiting_time += p[idx].waiting_time;
+                total_response_time += p[idx].response_time;
+
+                is_completed[idx] = 1;
+                completed++;
+            }
+        }
+        else {
+             current_time++;
+        }
+    }
+
+    int min_arrival_time = 10000000;
+    int max_completion_time = -1;
+    for(int i = 0; i < n; i++) {
+        min_arrival_time = min(min_arrival_time,p[i].arrival_time);
+        max_completion_time = max(max_completion_time,p[i].completion_time);
+    }
+
+    avg_turnaround_time = (float) total_turnaround_time / n;
+    avg_waiting_time = (float) total_waiting_time / n;
+    avg_response_time = (float) total_response_time / n;
+    cpu_utilisation = ((max_completion_time - total_idle_time) / (float) max_completion_time )*100;
+    throughput = float(n) / (max_completion_time - min_arrival_time);
+
+    cout<<endl<<endl;
+
+    cout<<"#P\t"<<"AT\t"<<"BT\t"<<"PRI\t"<<"ST\t"<<"CT\t"<<"TAT\t"<<"WT\t"<<"RT\t"<<"\n"<<endl;
+
+    for(int i = 0; i < n; i++) {
+        cout<<p[i].pid<<"\t"<<p[i].arrival_time<<"\t"<<p[i].burst_time<<"\t"<<p[i].priority<<"\t"<<p[i].start_time<<"\t"<<p[i].completion_time<<"\t"<<p[i].turnaround_time<<"\t"<<p[i].waiting_time<<"\t"<<p[i].response_time<<"\t"<<"\n"<<endl;
+    }
+    cout<<"Average Turnaround Time = "<<avg_turnaround_time<<endl;
+    cout<<"Average Waiting Time = "<<avg_waiting_time<<endl;
+    cout<<"Average Response Time = "<<avg_response_time<<endl;
+    cout<<"CPU Utilization = "<<cpu_utilisation<<"%"<<endl;
+    cout<<"Throughput = "<<throughput<<" process/unit time"<<endl;
+
+    return 0;
 }
-
-
-void order(Process Heap[], int* heapsize, int start)
-{
-	int smallest = start;
-	int left = 2 * start + 1;
-	int right = 2 * start + 2;
-	if (left < *heapsize && Heap[left].priority <
-							Heap[smallest].priority)
-		smallest = left;
-	if (right < *heapsize && Heap[right].priority <
-						Heap[smallest].priority)
-		smallest = right;
-
-	// Ordering the Heap
-	if (smallest != start) {
-		Process temp = Heap[smallest];
-		Heap[smallest] = Heap[start];
-		Heap[start] = temp;
-		order(Heap, heapsize, smallest);
-	}
+int initilize(int b[],int a[],int n){
+    int burst_remaining[100];
+     struct process p[n];
+    for(int i=0;i<n;i++){
+        p[i].pid=i;
+        p[i].arrival_time=a[i];
+        p[i].burst_time=a[i];
+        burst_remaining[i] = p[i].burst_time;
+    }
+Priority_Scheduling_pre(p,n,burst_remaining);
+return 0;
 }
-
-Process extractminimum(Process Heap[], int* heapsize,
-					int* currentTime)
-{
-	Process min = Heap[0];
-	if (min.responsetime == -1)
-		min.responsetime = *currentTime - min.arrivalTime;
-	--(*heapsize);
-	if (*heapsize >= 1) {
-		Heap[0] = Heap[*heapsize];
-		order(Heap, heapsize, 0);
-	}
-	return min;
-}
-
-bool compare(Process p1, Process p2)
-{
-	return (p1.arrivalTime < p2.arrivalTime);
-}
-
-void scheduling(Process Heap[], Process array[], int n,
-				int* heapsize, int* currentTime)
-{
-	if (heapsize == 0)
-		return;
-
-	Process min = extractminimum(Heap, heapsize, currentTime);
-	min.outtime = *currentTime + 1;
-	--min.burstTime;
-	printf("process id = %d current time = %d\n",
-		min.processID, *currentTime);
-
-	if (min.burstTime > 0) {
-		insert(Heap, min, heapsize, currentTime);
-		return;
-	}
-
-	for (int i = 0; i < n; i++)
-		if (array[i].processID == min.processID) {
-			array[i] = min;
-			break;
-		}
-}
-
-void priority(Process array[], int n)
-{
-	sort(array, array + n, compare);
-
-	int totalwaitingtime = 0, totalbursttime = 0,
-		totalturnaroundtime = 0, i, insertedprocess = 0,
-		heapsize = 0, currentTime = array[0].arrivalTime,
-		totalresponsetime = 0;
-
-	Process Heap[4 * n];
-
-	for (int i = 0; i < n; i++) {
-		totalbursttime += array[i].burstTime;
-		array[i].tempburstTime = array[i].burstTime;
-	}
-
-	do {
-		if (insertedprocess != n) {
-			for (i = 0; i < n; i++) {
-				if (array[i].arrivalTime == currentTime) {
-					++insertedprocess;
-					array[i].intime = -1;
-					array[i].responsetime = -1;
-					insert(Heap, array[i], &heapsize, ¤tTime);
-				}
-			}
-		}
-		scheduling(Heap, array, n, &heapsize, ¤tTime);
-		++currentTime;
-		if (heapsize == 0 && insertedprocess == n)
-			break;
-	} while (1);
-
-	for (int i = 0; i < n; i++) {
-		totalresponsetime += array[i].responsetime;
-		totalwaitingtime += (array[i].outtime - array[i].intime -
-										array[i].tempburstTime);
-		totalbursttime += array[i].burstTime;
-	}
-	printf("Average waiting time = %f\n",
-		((float)totalwaitingtime / (float)n));
-	printf("Average response time =%f\n",
-		((float)totalresponsetime / (float)n));
-	printf("Average turn around time = %f\n",
-		((float)(totalwaitingtime + totalbursttime) / (float)n));
-}
-/*
-// Driver code
-int main()
-{
-	int n, i;
-	Process a[5];
-	a[0].processID = 1;
-	a[0].arrivalTime = 4;
-	a[0].priority = 2;
-	a[0].burstTime = 6;
-	a[1].processID = 4;
-	a[1].arrivalTime = 5;
-	a[1].priority = 1;
-	a[1].burstTime = 3;
-	a[2].processID = 2;
-	a[2].arrivalTime = 5;
-	a[2].priority = 3;
-	a[2].burstTime = 1;
-	a[3].processID = 3;
-	a[3].arrivalTime = 1;
-	a[3].priority = 4;
-	a[3].burstTime = 2;
-	a[4].processID = 5;
-	a[4].arrivalTime = 3;
-	a[4].priority = 5;
-	a[4].burstTime = 4;
-	priority(a, 5);
-	return 0;
-}
-*/

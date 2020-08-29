@@ -44,7 +44,7 @@ int main() {
        return 0;
        break;
   case 3:
-
+      initilize(b,a,n);
 	  return 0;
       break;
   case 4:
